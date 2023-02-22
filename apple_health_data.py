@@ -23,10 +23,17 @@ import lxml
 export_df = pd.read_xml('export.xml')
 export_df_copy = export_df.copy()
 
+# Save out
+export_df.to_csv("export_df.csv")
+
 export_df.columns
 export_df.dtypes
 export_df[:10]
 df = export_df[['value','startDate','unit']]
+df.dtypes
+df.loc[:,'startDate'] = pd.to_datetime(df['startDate'].str[:-6])
+df['startDate_'] = pd.to_datetime(df['startDate'], format='%Y%m%d')
+df['value'].astype(float)
 df.columns
 df.unit.value_counts()
 df.loc[df.unit=='ft']
@@ -34,8 +41,8 @@ df.loc[df.unit=='lb']
 df.loc[df.unit=='mi']
 
 df=df[4:]
-df['startDate'] = pd.to_datetime(df['startDate'].str[:-6])
-df['value'].astype(float)
+
+
 df.dtypes
 
 df.loc[df.value=='HKCategoryValueSleepAnalysisAsleep']
@@ -54,14 +61,20 @@ for i in df['unit'].value_counts().index:
 set(export_df['HKCharacteristicTypeIdentifierDateOfBirth'])
 set(export_df['HKCharacteristicTypeIdentifierBloodType'])
 set(export_df['workoutActivityType'])
+
 df = df.set_index('startDate')
 df.loc[df.unit=='count/min','value'].describe()
 df.loc[df.unit=='count/min'][:500][['value', 'startDate']].plot()
+
+df.loc[df.unit=='count/min']['value'][:500]
+df.index.dt
+
 plt.plot(df.loc[df.unit=='count/min']['value'])
 plt.xticks(df.loc[df.unit=='count/min']['startDate'])
 plt.show()
-df.index.value_counts().sort_index()
-
+df.loc[:,'day'] = df.index.day
+df.loc[:,'month'] = df.index.month
+df.loc[:,'year'] = df.index.year
 
 for c in export_df.columns:
     print(export_df[c].unique())
