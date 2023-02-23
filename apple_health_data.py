@@ -26,6 +26,8 @@ export_df_copy = export_df.copy()
 # Save out
 export_df.to_csv("export_df.csv")
 
+# Drop rows where NULL (i.e. no values provided)
+
 export_df.columns
 export_df.dtypes
 export_df[:10]
