@@ -23,14 +23,40 @@ import lxml
 export_df = pd.read_xml('export.xml')
 export_df_copy = export_df.copy()
 
+
+
+# Drop rows where NULL (i.e. no values provided)
+nunique_eq_0 = export_df.nunique()[export_df.nunique()==0]
+export_df = export_df.drop(columns=nunique_eq_0.index)
+
+nunique_eq_1 = export_df.nunique()[export_df.nunique()==1]
+
+nunique_eq_2 = export_df.nunique()[export_df.nunique()==2]
+
+ft_lb_df = export_df.loc[export_df.unit.isin(['ft','lb'])]
+
+export_df = export_df.loc[~export_df.unit.isin(['ft','lb'])]
+#export_df['value'].dropna().apply(lambda x: len(x)).value_counts().index[export_df['value'].dropna().apply(lambda x: len(x)).value_counts().index>20]
+
+nunique_eq_1_df = []
+for col in nunique_eq_1.index:
+    unique_values = list(export_df[col].unique())
+    unique_values = [x for x in unique_values if x is not None]# or str(x) != 'nan')]
+    col, [x for x in unique_values if str(x) != 'nan']
+    nunique_eq_1_df.extend([ col, [x for x in unique_values if str(x) != 'nan'] ])
+
+export_df = export_df.drop(columns=nunique_eq_1.index)
 # Save out
 export_df.to_csv("export_df.csv")
 
-# Drop rows where NULL (i.e. no values provided)
+export_df.iloc[  export_df['value'].dropna().apply(lambda x: len(x))[ export_df['value'].dropna().apply(lambda x: len(x))==33 ].index  ]
 
-export_df.columns
-export_df.dtypes
-export_df[:10]
+
+
+
+export_df.index.isin(  export_df['value'].dropna().apply(lambda x: len(x))[ export_df['value'].dropna().apply(lambda x: len(x))==33 ].index  )
+export_df
+
 df = export_df[['value','startDate','unit']]
 df.dtypes
 df.loc[:,'startDate'] = pd.to_datetime(df['startDate'].str[:-6])
@@ -59,10 +85,6 @@ for i in df['unit'].value_counts().index:
     i
     df.loc[df.unit==i,'value'].describe()
     print('\n')
-
-set(export_df['HKCharacteristicTypeIdentifierDateOfBirth'])
-set(export_df['HKCharacteristicTypeIdentifierBloodType'])
-set(export_df['workoutActivityType'])
 
 df = df.set_index('startDate')
 df.loc[df.unit=='count/min','value'].describe()
